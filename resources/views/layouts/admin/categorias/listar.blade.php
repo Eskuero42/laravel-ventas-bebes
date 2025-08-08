@@ -67,7 +67,6 @@
                         data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
 
-                <!-- Cuerpo del modal -->
                 <div class="modal-body">
                     <form action="" id="addForm">
                         @csrf

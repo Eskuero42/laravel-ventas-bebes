@@ -190,6 +190,17 @@
                                     </div>
                                     <div class="flex-shrink-0">
                                         <div>
+
+
+                                            <a class="btn btn-info comprarArticuloBtn" data-bs-toggle="modal"
+                                                data-bs-target="#compraArticuloModal"
+                                                data-bs-obj='@json($articulo)'
+                                                data-bs-catalogos='@json($articulo->catalogos)' title="Comprar producto">
+                                                <i class="ri-shopping-cart-line"></i>
+                                            </a>
+
+                                            &nbsp;
+
                                             <a class="btn btn-light editArticuloBtn" data-bs-toggle="modal"
                                                 data-bs-target="#editArticuloModal"
                                                 data-bs-obj='@json($articulo)'
@@ -642,6 +653,71 @@
         </div>
     </div>
 
+    <!--modal para comprar articulo -->
+    <div id="compraArticuloModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true"
+        style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myModalLabel"><i
+                            class="ri-shopping-cart-line fs-24 align-middle text-info"></i> Registrar compra
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+                </div>
+                <div class="modal-body">
+                    <h5>
+                        {{ $articulo->nombre }} - @foreach ($articulo->catalogos as $catalogo)
+                            {{ $catalogo->tipo->nombre }} :
+                            {{ $catalogo->especificacion->descripcion }}
+                        @endforeach
+                    </h5>
+                    <form id="nuevaCompraArticuloForm" autocomplete="off">
+                        @csrf
+                        <div class="modal-body">
+                            <input type="hidden" name="articulo_id" id="compraArticuloId">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Stock actual</label>
+                                        <input type="text" id="compraArticuloStock" class="form-control" disabled
+                                            style="font-size:1.5rem; font-weight:600;">
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="row">
+                                        <div class="mb-3">
+                                            <label class="form-label">Cantidad comprada</label>
+                                            <input type="number" name="cantidad_comprada" class="form-control"
+                                                min="1" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="mb-3">
+                                            <label class="form-label">Precio Total</label>
+                                            <input type="number" name="detalle_precio" class="form-control"
+                                                min="0" step="0.01" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="mb-3">
+                                            <label class="form-label">Descuento (opcional)</label>
+                                            <input type="number" name="descuento" class="form-control" min="0"
+                                                step="0.01">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-info">Registrar compra</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de registrar Detalles -->
     <div class="modal fade" id="nuevoDetalleModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-md">
@@ -649,7 +725,7 @@
                 <div class="modal-header bg-light">
                     <h5 class="modal-title">
                         <i class="ri-add-line me-1 align-middle text-success"></i>
-                        Registrar nuevo detalle
+                        Registrar compra
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
@@ -1363,6 +1439,49 @@
 
             // Ejecutar al cargar por si ya hay uno seleccionado
             toggleInputs();
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $(document).on('click', '.comprarArticuloBtn', function(e) {
+                e.preventDefault();
+
+                $('#nuevaCompraArticuloForm')[0].reset();
+
+                const data = $(this).data('bs-obj');
+                console.log(data); 
+
+                $('#compraArticuloId').val(data.id);
+                $('#compraArticuloNombre').val(data.nombre);
+                $('#compraArticuloStock').val(data.stock);
+
+                $('#compraArticuloModal').modal('show');
+            });
+
+            $('#nuevaCompraArticuloForm').submit(function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                $.ajax({
+                    url: "{{ route('admin.compras.articulos') }}",
+                    method: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        $('#compraArticuloModal').modal('hide');
+                        $('#nuevaCompraArticuloForm')[0].reset();
+
+                        alert(res.message || 'La compra fue registrada correctamente');
+
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        alert(xhr.responseJSON?.message || 'No se pudo registrar la compra');
+                    }
+                });
+            });
         });
     </script>
 @endpush

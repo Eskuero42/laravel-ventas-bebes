@@ -100,3 +100,4 @@ Route::post('/admin/personas/editar', [PersonasController::class, 'personasedita
 Route::get('/admin/compras/listar', [ComprasController::class, 'compraslistar'])->name('admin.compras.listar');
 Route::get('/admin/compras/detalles/{id}', [ComprasController::class, 'verdetalles'])->name('admin.compras.verdetalles');
 Route::post('/admin/comprar/registrar', [ComprasController::class, 'comprasRegistrar'])->name('admin.compras.registrar');
+Route::post('/admin/compras/articulo', [ComprasController::class, 'registrarCompraArticulo'])->name('admin.compras.articulos');

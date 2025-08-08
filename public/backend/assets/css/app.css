@@ -18082,3 +18082,9 @@ span.flatpickr-weekday {
     bottom: -18px;
     right: -35px
 }
+
+#compraArticuloStock {
+    font-size: 1.5rem;  /* Tamaño de letra más grande */
+    font-weight: 600;   /* Opcional: más negrita para destacar */
+    height: auto;       /* Ajusta la altura si quieres */
+}

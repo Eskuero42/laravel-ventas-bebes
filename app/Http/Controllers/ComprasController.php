@@ -7,6 +7,8 @@ use App\Models\Categoria;
 use App\Models\Compra;
 use App\Models\Compra_Articulo;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ComprasController extends Controller
 {
@@ -71,5 +73,54 @@ class ComprasController extends Controller
             'success' => true,
             'msg' => 'Compra Registrada correctamente.!'
         ]);
+    }
+
+    public function registrarCompraArticulo(Request $request)
+    {
+        $request->validate([
+            'articulo_id' => 'required|exists:articulos,id',
+            'cantidad_comprada' => 'required|integer|min:1',
+            'detalle_precio' => 'required|numeric|min:0',
+            'descuento' => 'nullable|numeric|min:0',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $descuento = $request->input('descuento', 0);
+            $pago_total = $request->detalle_precio - $descuento;
+
+            $ultimoCodigo = Compra::orderBy('id', 'desc')->first();
+            $nuevoCodigo = 'COMP-' . str_pad(($ultimoCodigo?->id + 1 ?? 1), 6, '0', STR_PAD_LEFT);
+
+            $compra = Compra::create([
+                'codigo' => $nuevoCodigo,
+                'fecha_compra' => Carbon::now(),
+                'precio_total' => $request->detalle_precio,
+                'descuento' => $descuento,
+                'pago_total' => $pago_total,
+                'cantidad' => $request->cantidad_comprada,
+            ]);
+
+            Compra_Articulo::create([
+                'compra_id' => $compra->id,
+                'articulo_id' => $request->articulo_id,
+                'cantidad_comprada' => $request->cantidad_comprada,
+                'detalle_precio' => $request->detalle_precio,
+                'descuento' => $descuento,
+            ]);
+
+
+            $articulo = \App\Models\Articulo::findOrFail($request->articulo_id);
+            $articulo->stock += $request->cantidad_comprada;
+            $articulo->save();
+
+            DB::commit();
+
+            return response()->json(['success' => true, 'message' => 'Compra registrada correctamente.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Error al registrar la compra.', 'error' => $e->getMessage()]);
+        }
     }
 }
