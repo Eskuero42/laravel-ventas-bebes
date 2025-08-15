@@ -20,8 +20,18 @@
                                 <td>
                                     <div class="d-flex gap-2 align-items-center">
                                         <div class="flex-shrink-0">
-                                            <img src="assets/images/adminBebBus/iconos/mono.png" alt=""
-                                                class="avatar-xs rounded-circle" />
+                                            <div
+                                                class="avatar-sm bg-light rounded p-1 d-flex align-items-center justify-content-center">
+                                                @if (!empty($producto->imagen_principal) && file_exists(public_path($producto->imagen_principal)))
+                                                    <img src="{{ asset($producto->imagen_principal) }}"
+                                                        alt="{{ $producto->nombre }}" class="img-fluid rounded"
+                                                        style="width: 50px; height: 50px; object-fit: cover;">
+                                                @else
+                                                    <img src="{{ asset('imagenes/default.png') }}" alt="Sin imagen"
+                                                        class="img-fluid rounded"
+                                                        style="width: 50px; height: 50px; object-fit: cover;">
+                                                @endif
+                                            </div>
                                         </div>
                                         <div class="flex-grow-1">
                                             {{ $producto->nombre }}
@@ -30,9 +40,11 @@
                                 </td>
                                 <td>Bs. {{ number_format($producto->precio, 2) }}</td>
                                 <td>
-                                    <button type="button" class="btn btn-soft-secondary btn-sm">
+                                    <a href="{{ route('admin.articulos.listar', $producto->id) }}"
+                                        class="btn btn-primary btn-icon waves-effect waves-light"
+                                        title="Ir a detalles del producto">
                                         <i data-feather="eye"></i>
-                                    </button>
+                                    </a>
                                     <button type="button" class="btn btn-soft-warning btn-sm">
                                         <i data-feather="edit-2"></i>
                                     </button>

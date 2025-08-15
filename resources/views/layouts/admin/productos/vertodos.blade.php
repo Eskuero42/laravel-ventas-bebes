@@ -103,123 +103,44 @@
 
     @if (isset($categoria['categorias_hijos'][0]))
         <div class="row">
-            <div class="text-center mb-2">
-                <h4 class="mb-0">Subcategorías de {{ $categoria->nombre }}</h4>
-            </div>
+            @foreach ($categoria['categorias_hijos'] as $subcategoria)
+                <div class="col-xl-4 col-md-6">
+                    <div class="card card-height-100">
 
-            <div class="card">
-                <div class="card-body">
-                    @php $activo = true; @endphp
+                        <!-- Header con nombre de la subcategoría -->
+                        <div class="card-header align-items-center d-flex">
+                            <h4 class="card-title mb-0 flex-grow-1">{{ $subcategoria->nombre }}</h4>
+                        </div>
 
-                    <!-- Tabs de subcategorías -->
-                    <ul class="nav nav-tabs nav-justified nav-border-top nav-border-top-success mb-3" role="tablist">
-                        @foreach ($categoria['categorias_hijos'] as $subcategoria)
-                            <li class="nav-item">
-                                <a class="nav-link {{ $activo ? 'active' : '' }}" data-bs-toggle="tab"
-                                    href="#nav-{{ $subcategoria->id }}-home" role="tab"
-                                    aria-selected="{{ $activo ? 'true' : 'false' }}">
-
-                                    {{ $subcategoria->nombre }}
-
-                                    <span class="btn btn-success btn-sm btn-icon"
-                                        onclick="event.stopPropagation(); window.location.href='{{ route('admin.productos.vertodos', ['id' => $subcategoria->id]) }}';"
-                                        title="Entrar a subcategoría {{ $subcategoria->nombre }}">
-                                        <i data-feather="eye"></i>
-                                    </span>
-                                </a>
-                            </li>
-                            @php $activo = false; @endphp
-                        @endforeach
-                    </ul>
-
-                    <!-- Contenido de los tabs -->
-                    <div class="tab-content text-muted">
-                        @php $seleccionado = 1; @endphp
-
-                        @foreach ($categoria['categorias_hijos'] as $subcategoria)
-                            <div class="tab-pane {{ $seleccionado ? 'active' : '' }}"
-                                id="nav-{{ $subcategoria->id }}-home" role="tabpanel">
-
-                                @php $seleccionado = 0; @endphp
-
-                                <div class="row">
-                                    @foreach ($subcategoria['productos'] as $producto)
-                                        <div class="col-xl-4">
-                                            <div class="card product">
-                                                <div class="card-body">
-                                                    <div class="row gy-3 align-items-start">
-
-                                                        <!-- Imagen -->
-                                                        <div class="col-sm-auto">
-                                                            <div class="avatar-lg bg-light rounded p-1">
-                                                                <img src="{{ asset($producto->imagen_principal) }}"
-                                                                    alt="Producto" class="img-fluid d-block">
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Info del producto -->
-                                                        <div class="col-sm">
-                                                            <div class="d-flex justify-content-between">
-                                                                <h5 class="fs-16 text-truncate mb-2">
-                                                                    {{ $producto->nombre }}
-                                                                </h5>
-                                                                <div class="text-end">
-                                                                    <p class="text-muted mb-1">CÓDIGO:</p>
-                                                                    <h6 class="product-price fw-semibold">
-                                                                        {{ $producto->codigo }}
-                                                                    </h6>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="d-flex align-items-center gap-2 text-muted mb-1">
-                                                                <span class="fw-semibold">Precio:</span>
-                                                                <span>Bs. <span
-                                                                        class="product-line-price">{{ $producto->precio }}</span></span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Footer de acciones -->
-                                                <div class="card-footer">
-                                                    <div class="row align-items-center gy-3">
-                                                        <div class="col-sm-auto">
-                                                            <!-- Ver producto -->
-                                                            <a href="{{ route('admin.articulos.listar', $producto->id) }}"
-                                                                class="btn btn-primary btn-icon waves-effect waves-light"
-                                                                title="Ir a detalles del producto">
-                                                                <i data-feather="eye"></i>
-                                                            </a>
-
-                                                            <!-- Editar producto -->
-                                                            <a href="#"
-                                                                class="btn btn-warning btn-icon waves-effect waves-light editarProductoBtn"
-                                                                data-id="{{ $producto->id }}"
-                                                                data-nombre="{{ $producto->nombre }}"
-                                                                data-codigo="{{ $producto->codigo }}"
-                                                                data-precio="{{ $producto->precio }}"
-                                                                data-descripcion="{{ $producto->descripcion }}"
-                                                                data-imagen="{{ $producto->imagen_principal }}"
-                                                                data-categoria_id="{{ $producto->categoria_id }}"
-                                                                data-bs-toggle="modal" data-bs-target=".bs-edit-modal-xl"
-                                                                title="Editar producto">
-                                                                <i data-feather="edit-2"></i>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
+                        <!-- Cuerpo de la tarjeta -->
+                        <div class="card-body text-center">
+                            <!-- Imagen -->
+                            <div class="bg-info-subtle rounded p-2 mb-3">
+                                <img src="{{ asset($subcategoria->imagen) }}" alt="{{ $subcategoria->nombre }}"
+                                    class="img-fluid rounded" style="max-height: 210px;">
                             </div>
-                        @endforeach
+
+                            <!-- Descripción -->
+                            <h5>
+                                <p>
+                                    {{ $subcategoria->descripcion ?? 'Sin descripción' }}
+                                </p>
+                            </h5>
+
+                            <!-- Botón para ver productos -->
+                            <a href="{{ route('admin.productos.vertodos', ['id' => $subcategoria->id, 'tipo' => $subcategoria->tipo ?? '']) }}"
+                                class="btn btn-info waves-effect waves-light"
+                                title="Ver todos los productos de {{ $subcategoria->nombre }}">
+                                <i data-feather="eye"></i> Todos los productos
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endforeach
         </div>
     @endif
 
+    <!--    
     <div class="row">
         @foreach ($otrascategorias as $otra)
             <div class="col-xl-4 col-md-6">
@@ -250,6 +171,7 @@
         @endforeach
 
     </div>
+    -->
 
     <!--modal de registrar producto-->
     <div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"

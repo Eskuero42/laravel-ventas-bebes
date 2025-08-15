@@ -51,6 +51,14 @@
                 </li>
 
                 <li class="nav-item">
+                    <a class="nav-link menu-link text-white bg-baby-sky" href="{{ route('admin.productos.listar') }}">
+                        <img src="{{ asset('backend\assets\images\adminBebBus\iconos\bienes.png') }}"
+                            alt="Productos" class="img-fluid avatar-xs me-2">
+                        <span class="fs-3">Productos</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
                     <a class="nav-link menu-link text-white bg-baby-sky" href="{{ route('admin.compras.listar') }}">
                         <img src="{{ asset('backend\assets\images\adminBebBus\iconos\carrito.png') }}"
                             alt="Productos" class="img-fluid avatar-xs me-2">

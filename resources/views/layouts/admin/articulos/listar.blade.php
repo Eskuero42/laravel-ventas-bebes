@@ -676,10 +676,13 @@
                 </div>
                 <div class="modal-body">
                     <h5>
-                        {{ $articulo->nombre }} - @foreach ($articulo->catalogos as $catalogo)
-                            {{ $catalogo->tipo->nombre }} :
-                            {{ $catalogo->especificacion->descripcion }}
-                        @endforeach
+                        {{ $articulo->nombre ?? 'Artículo no disponible' }} -
+                        @forelse ($articulo->catalogos ?? [] as $catalogo)
+                            {{ $catalogo->tipo?->nombre ?? 'Sin tipo' }} :
+                            {{ $catalogo->especificacion?->descripcion ?? 'Sin especificación' }}
+                        @empty
+                            <span>No hay catálogos registrados</span>
+                        @endforelse
                     </h5>
                     <form id="nuevaCompraArticuloForm" autocomplete="off">
                         @csrf
@@ -1461,7 +1464,7 @@
                 $('#nuevaCompraArticuloForm')[0].reset();
 
                 const data = $(this).data('bs-obj');
-                console.log(data); 
+                console.log(data);
 
                 $('#compraArticuloId').val(data.id);
                 $('#compraArticuloNombre').val(data.nombre);

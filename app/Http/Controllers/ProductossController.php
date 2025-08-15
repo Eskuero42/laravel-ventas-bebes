@@ -33,12 +33,12 @@ class ProductossController extends Controller
 
     public function productosListar()
     {
-        /*$categorias = Categoria::with(['productos', 'categorias_hijosRecursive.productos'])
+        // Traemos las categorías padre con sus productos y subcategorías recursivas
+        $categorias = Categoria::with(['productos', 'categorias_hijosRecursive.productos'])
             ->whereNull('categoria_id')
-            ->get();*/
-        $categorias = Categoria::where('categoria_id', '=', 'null')->get();
+            ->get();
 
-        $tipos = Tipo::get();
+        $tipos = Tipo::all();
 
         return view('layouts.admin.productos.listar', compact('categorias', 'tipos'));
     }
@@ -66,9 +66,9 @@ class ProductossController extends Controller
             $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
 
             $paths = [
-                'pc' => 'productos/pc/',
-                'tablet' => 'productos/tablet/',
-                'celular' => 'productos/celular/'
+                'pc' => 'archivos/productos/pc/',
+                'tablet' => 'archivos/productos/tablet/',
+                'celular' => 'archivos/productos/celular/'
             ];
 
             $sizes = [
@@ -78,14 +78,21 @@ class ProductossController extends Controller
             ];
 
             foreach ($paths as $key => $path) {
-                Storage::disk('public')->makeDirectory($path);
+                $fullPath = public_path($path);
+                if (!file_exists($fullPath)) {
+                    mkdir($fullPath, 0777, true); // crea la carpeta recursivamente con permisos
+                }
+
                 Image::make($image)
-                    ->resize($sizes[$key][0], $sizes[$key][1])
-                    ->save(public_path('storage/' . $path . $name_gen));
+                    ->resize($sizes[$key][0], $sizes[$key][1], function ($constraint) {
+                        $constraint->aspectRatio();
+                        $constraint->upsize();
+                    })
+                    ->save($fullPath . $name_gen);
             }
 
             // Guardamos la versión de PC como imagen principal
-            $save_url = 'storage/' . $paths['pc'] . $name_gen;
+            $save_url = $paths['pc'] . $name_gen;
         }
 
         $producto = Producto::create([
