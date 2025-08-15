@@ -108,7 +108,7 @@
                         <div class="mb-3">
                             <label for="descripcion" class="form-label">Descripción</label>
                             <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
-                                placeholder="Introducir descripción del producto" required></textarea>
+                                placeholder="Introducir descripción del producto"></textarea>
                         </div>
 
                         <div class="modal-footer">

@@ -26,7 +26,7 @@ class CategoriasController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'tipo' => 'required|in:asignado,no asignado',
-            'descripcion' => 'required|string|max:1000',
+            'descripcion' => 'nullable|string|max:1000',
             'imagen' => 'required|image|mimes:jpeg,png,jpg,gif,ico|max:2048',
             'categoria_id' => 'nullable|exists:categorias,id',
         ]);
@@ -80,7 +80,7 @@ class CategoriasController extends Controller
             'id' => 'required|integer|exists:categorias,id',
             'nombre' => 'required|string|max:255',
             'tipo' => 'required|in:asignado,no asignado',
-            'descripcion' => 'required|string|max:1000',
+            'descripcion' => 'nullable|string|max:1000',
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,ico|max:2048',
         ]);
 
