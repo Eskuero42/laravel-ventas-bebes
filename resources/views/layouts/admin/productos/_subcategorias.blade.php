@@ -46,14 +46,9 @@
                                         <i data-feather="eye"></i>
                                     </a>
 
-                                    <a href="#"
-                                        class="btn btn-warning btn-icon waves-effect waves-light editarProductoBtn"
-                                        data-id="{{ $producto->id }}" data-nombre="{{ $producto->nombre }}"
-                                        data-codigo="{{ $producto->codigo }}" data-precio="{{ $producto->precio }}"
-                                        data-descripcion="{{ $producto->descripcion }}"
-                                        data-imagen="{{ $producto->imagen_principal }}"
-                                        data-categoria_id="{{ $producto->categoria_id }}" data-bs-toggle="modal"
-                                        data-bs-target=".bs-edit-modal-xl" title="Editar producto">
+                                    <a href="#" class="btn btn-warning btn-icon waves-effect waves-light"
+                                        data-bs-toggle="modal" data-bs-target=".bs-edit-modal-xl"
+                                        title="Editar producto">
                                         <i data-feather="edit-2"></i>
                                     </a>
 
@@ -72,4 +67,3 @@
         @endif
     </div>
 @endforeach
-
