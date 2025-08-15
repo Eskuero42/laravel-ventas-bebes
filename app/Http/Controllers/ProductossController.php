@@ -245,4 +245,52 @@ class ProductossController extends Controller
 
         return back()->with('success', 'Categoría actualizada exitosamente.');
     }
+
+    public function registrarpr(Request $request)
+    {
+        $request->validate([
+            'codigo'       => 'nullable|string|max:255|unique:productos,codigo',
+            'nombre'       => 'required|string|max:255',
+            'precio'       => 'required|numeric|min:0',
+            'descripcion'  => 'nullable|string',
+            'categoria_id' => 'required|exists:categorias,id',
+            'file'         => 'nullable|file|image|max:2048',
+            'tipos'        => 'nullable|array',
+            'tipos.*'      => 'exists:tipos,id'
+        ]);
+
+        $save_url = null;
+        if ($request->hasFile('file')) {
+            $image = $request->file('file');
+            $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
+            $path = 'archivos/productos/';
+            if (!file_exists(public_path($path))) mkdir(public_path($path), 0777, true);
+            $image->move(public_path($path), $name_gen);
+            $save_url = $path . $name_gen;
+        }
+
+        $producto = Producto::create([
+            'codigo' => $request->codigo,
+            'nombre' => $request->nombre,
+            'descripcion' => $request->descripcion,
+            'precio' => $request->precio,
+            'imagen_principal' => $save_url,
+            'categoria_id' => $request->categoria_id,
+        ]);
+
+        if ($request->tipos) {
+            foreach ($request->tipos as $tipo_id) {
+                ProductoTipo::create([
+                    'producto_id' => $producto->id,
+                    'tipo_id' => $tipo_id
+                ]);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Producto registrado exitosamente.',
+            'producto' => $producto
+        ]);
+    }
 }

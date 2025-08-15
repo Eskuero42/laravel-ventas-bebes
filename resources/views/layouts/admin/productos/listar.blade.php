@@ -85,14 +85,20 @@
                                                     </td>
                                                     <td>Bs. {{ number_format($producto->precio, 2) }}</td>
                                                     <td>
+
                                                         <a href="{{ route('admin.articulos.listar', $producto->id) }}"
                                                             class="btn btn-primary btn-icon waves-effect waves-light"
                                                             title="Ir a detalles del producto">
                                                             <i data-feather="eye"></i>
                                                         </a>
-                                                        <button type="button" class="btn btn-soft-warning btn-sm">
+
+                                                        <a href="#"
+                                                            class="btn btn-warning btn-icon waves-effect waves-light"
+                                                            data-bs-toggle="modal" data-bs-target=".bs-edit-modal-xl"
+                                                            title="Editar producto">
                                                             <i data-feather="edit-2"></i>
-                                                        </button>
+                                                        </a>
+
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -116,7 +122,7 @@
     </div>
 
 
-    <!--modal de registrar-->
+    <!--modal de registrar producto-->
     <div class="modal fade bs-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-xl" role="document">
@@ -132,91 +138,242 @@
                 </div>
 
                 <div class="modal-body">
-                    <form action="" id="addForm" enctype="multipart/form-data">
-                        <div class="row g-3">
-                            <div class="row mb-3">
-                                <div class="col-md-3">
-                                    <label for="codigo" class="form-label">Código</label>
-                                    <input type="text" class="form-control" id="" placeholder="M-##">
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="nombre" class="form-label">Nombre</label>
-                                    <input type="text" class="form-control" id=""
-                                        placeholder="Nombre del producto">
-                                </div>
-
-                                <div class="col-md-3">
-                                    <label for="precio" class="form-label">Precio</label>
-                                    <input type="number" class="form-control" id=""
-                                        placeholder="introducir precio" step="0.01" min="0">
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <label for="" class="form-label">Descripción</label>
-                                    <textarea class="form-control" id="" rows="3" placeholder="Introducir descripción del producto"></textarea>
-                                </div>
-
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col md-6">
-                                    <div class="card-body">
-                                        <div class="dropzone">
-                                            <div class="fallback">
-                                                <input name="file" type="file" multiple="multiple">
-                                            </div>
-                                            <div class="dz-message needsclick">
-                                                <div class="mb-3">
-                                                    <i class="display-4 text-muted ri-upload-cloud-2-fill"></i>
-                                                </div>
-
-                                                <h4>Drop files here or click to upload.</h4>
-                                            </div>
+                    <form id="addformproducto" enctype="multipart/form-data">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="row g-3">
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="codigo" class="form-label">Código</label>
+                                            <input type="text" name="codigo" class="form-control" id=""
+                                                placeholder="M-##">
                                         </div>
 
-                                        <ul class="list-unstyled mb-0" id="dropzone-preview">
-                                            <li class="mt-2" id="dropzone-preview-list">
+                                        <div class="col-md-9">
+                                            <label for="nombre" class="form-label">Nombre</label>
+                                            <input type="text" name="nombre" class="form-control" id=""
+                                                placeholder="Nombre del producto">
+                                        </div>
 
-                                            </li>
-                                        </ul>
                                     </div>
-                                </div>
 
-                                <div class="col md-3 ms-auto">
-                                    <label for="" class="form-label">Elija el tipo</label>
-                                    <div class="row mb-3 mt-3">
-                                        @foreach ($tipos as $tipo)
-                                            <div class="col-xl-3">
-                                                <label for="descripcion" class="form-label">{{ $tipo->nombre }}</label>
-                                                @foreach ($tipo['especificaciones'] as $especificacion)
-                                                    <div class="form-check form-check-primary mb-3">
-                                                        <input class="form-check-input" type="checkbox"
-                                                            id="{{ $especificacion->descripcion }}">
-                                                        <label class="form-check-label text-primary"
-                                                            for="{{ $especificacion->descripcion }}">
-                                                            {{ $especificacion->descripcion }}
-                                                        </label>
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="precio" class="form-label">Precio</label>
+                                            <input type="text" name="precio" class="form-control" id=""
+                                                placeholder="Precio del producto" step="0.01" min="0">
+                                        </div>
+                                        <div class="col-md-9">
+                                            <label for="" class="form-label">Descripción</label>
+                                            <textarea name="descripcion" rows="3" class="form-control" placeholder="Descripción del producto"></textarea>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col md-12">
+                                            <div class="card-body">
+                                                <div class="mb-3">
+                                                    <label for="file" class="form-label">Imagen principal del
+                                                        producto</label>
+                                                    <input type="file" name="file" class="form-control" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col md-12">
+                                            <label for="" class="form-label">Elija el tipo</label>
+                                            <div class="row mb-3 mt-3">
+                                                @foreach ($tipos as $tipo)
+                                                    <div class="col-xl-3">
+                                                        <div class="form-check form-check-primary mb-2">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                name="tipos[]" id="tipo_{{ $tipo->id }}"
+                                                                value="{{ $tipo->id }}">
+
+                                                            <label class="form-check-label text-primary"
+                                                                for="tipo_{{ $tipo->id }}">
+                                                                {{ $tipo->nombre }}
+                                                            </label>
+                                                        </div>
                                                     </div>
                                                 @endforeach
                                             </div>
-                                        @endforeach
-
+                                        </div>
                                     </div>
                                 </div>
+                            </div>
 
+                            <div class="col-md-5">
+                                <label class="form-label">Seleccione una categoría</label>
+                                <div class="row">
+                                    @foreach ($categorias as $categoria)
+                                        <div class="col-md-4">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="radio" name="categoria_id"
+                                                    id="categoria_{{ $categoria->id }}" value="{{ $categoria->id }}">
+                                                <label class="form-check-label fw-bold text-primary"
+                                                    for="categoria_{{ $categoria->id }}">
+                                                    {{ $categoria->nombre }}
+                                                </label>
+                                            </div>
 
-
+                                            {{-- Subcategorías --}}
+                                            @if ($categoria->categorias_hijosRecursive->count())
+                                                @foreach ($categoria->categorias_hijosRecursive as $hijo)
+                                                    <div class="form-check ms-3 mb-1">
+                                                        <input class="form-check-input" type="radio"
+                                                            name="categoria_id" id="categoria_{{ $hijo->id }}"
+                                                            value="{{ $hijo->id }}">
+                                                        <label class="form-check-label"
+                                                            for="categoria_{{ $hijo->id }}">
+                                                            {{ $hijo->nombre }}
+                                                        </label>
+                                                    </div>
+                                                @endforeach
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
 
                         <div class="modal-footer mt-3">
                             <button type="button" class="btn bg-danger" data-bs-dismiss="modal"
                                 style="color: white;">Cerrar</button>
-                            <button type="submit" class="btn bg-success addBtn" style="color: white;">Agregar
-                                Producto</button>
+                            <button type="submit" class="btn btn-success addBtn">Agregar Producto</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!--modal de editar producto-->
+    <div class="modal fade bs-edit-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header bg-soft-warning justify-content-center position-relative">
+                    <h3 class="modal-title text-uppercase fw-bold text-warning-emphasis text-center w-100"
+                        id="myExtraLargeModalLabel">
+                        <i class="ri-folder-add-line me-1"></i> Editar Producto
+                    </h3>
+                    <button type="button" class="btn-close position-absolute end-0 top-50 translate-middle-y me-3"
+                        data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form id="addformproducto" enctype="multipart/form-data">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="row g-3">
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="codigo" class="form-label">Código</label>
+                                            <input type="text" name="codigo" class="form-control" id=""
+                                                placeholder="M-##">
+                                        </div>
+
+                                        <div class="col-md-9">
+                                            <label for="nombre" class="form-label">Nombre</label>
+                                            <input type="text" name="nombre" class="form-control" id=""
+                                                placeholder="Nombre del producto">
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="precio" class="form-label">Precio</label>
+                                            <input type="text" name="precio" class="form-control" id=""
+                                                placeholder="Precio del producto" step="0.01" min="0">
+                                        </div>
+                                        <div class="col-md-9">
+                                            <label for="" class="form-label">Descripción</label>
+                                            <textarea name="descripcion" rows="3" class="form-control" placeholder="Descripción del producto"></textarea>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col md-12">
+                                            <div class="card-body">
+                                                <div class="mb-3">
+                                                    <label for="file" class="form-label">Imagen principal del
+                                                        producto</label>
+                                                    <input type="file" name="file" class="form-control" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col md-12">
+                                            <label for="" class="form-label">Elija el tipo</label>
+                                            <div class="row mb-3 mt-3">
+                                                @foreach ($tipos as $tipo)
+                                                    <div class="col-xl-3">
+                                                        <div class="form-check form-check-primary mb-2">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                name="tipos[]" id="tipo_{{ $tipo->id }}"
+                                                                value="{{ $tipo->id }}">
+
+                                                            <label class="form-check-label text-primary"
+                                                                for="tipo_{{ $tipo->id }}">
+                                                                {{ $tipo->nombre }}
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <label class="form-label">Seleccione una categoría</label>
+                                <div class="row">
+                                    @foreach ($categorias as $categoria)
+                                        <div class="col-md-4">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="radio" name="categoria_id"
+                                                    id="categoria_{{ $categoria->id }}" value="{{ $categoria->id }}">
+                                                <label class="form-check-label fw-bold text-primary"
+                                                    for="categoria_{{ $categoria->id }}">
+                                                    {{ $categoria->nombre }}
+                                                </label>
+                                            </div>
+
+                                            {{-- Subcategorías --}}
+                                            @if ($categoria->categorias_hijosRecursive->count())
+                                                @foreach ($categoria->categorias_hijosRecursive as $hijo)
+                                                    <div class="form-check ms-3 mb-1">
+                                                        <input class="form-check-input" type="radio"
+                                                            name="categoria_id" id="categoria_{{ $hijo->id }}"
+                                                            value="{{ $hijo->id }}">
+                                                        <label class="form-check-label"
+                                                            for="categoria_{{ $hijo->id }}">
+                                                            {{ $hijo->nombre }}
+                                                        </label>
+                                                    </div>
+                                                @endforeach
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer mt-3">
+                            <button type="button" class="btn bg-danger" data-bs-dismiss="modal"
+                                style="color: white;">Cerrar</button>
+                            <button type="submit" class="btn btn-success addBtn">Actualizar Producto</button>
                         </div>
                     </form>
                 </div>

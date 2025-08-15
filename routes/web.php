@@ -60,6 +60,8 @@ Route::get('/admin/articulos/ver', [ProductossController::class, 'articulosver']
 Route::post('/admin/productos/registrar', [ProductossController::class, 'registrarproducto'])->name('admin.productos.registrar');
 Route::get('/admin/productos/buscar/{codigo}', [ProductossController::class, 'buscarPorCodigo'])->name('admin.productos.buscarPorCodigo');
 Route::post('/admin/productos/actualizar', [ProductossController::class, 'actualizarproducto'])->name('admin.productos.actualizar');
+Route::post('/admin/pr/registrar', [ProductossController::class, 'registrarpr'])->name('admin.pr.registrar');
+
 
 //Tipos
 Route::get('/admin/tipos/ver', [TiposController::class, 'tiposver'])->name('admin.tipos.ver');
