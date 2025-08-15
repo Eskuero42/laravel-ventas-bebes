@@ -93,9 +93,10 @@ Route::post('/admin/caracteristicas/editar-uno', [CaracteristicasController::cla
 Route::post('/admin/caracteristicas/elimiar-uno', [CaracteristicasController::class, 'eliminarCaracteristica'])->name('admin.eliminar.caracteristica');
 
 // Personas
-Route::get('/admin/personas/ver', [PersonasController::class, 'personasver'])->name('admin.personas.ver');
+Route::get('/admin/personas/listar', [PersonasController::class, 'personaslistar'])->name('admin.personas.listar');
 Route::post('/admin/personas/registrar', [PersonasController::class, 'personasregistrar'])->name('admin.personas.registrar');
 Route::post('/admin/personas/editar', [PersonasController::class, 'personaseditar'])->name('admin.personas.editar');
+Route::get('/admin/personas/ver', [PersonasController::class, 'personasver'])->name('admin.personas.ver');
 
 //compras
 Route::get('/admin/compras/listar', [ComprasController::class, 'compraslistar'])->name('admin.compras.listar');
