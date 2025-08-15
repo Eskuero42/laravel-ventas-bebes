@@ -176,12 +176,34 @@
                                             <td>
                                                 <div class="d-flex gap-2">
                                                     <div class="edit">
-
-                                                        <button class="btn btn-sm btn-success verCompraBtn"
-                                                            data-bs-target=".bs-ver-modal-xl"{{ $compra->id }}"
-                                                            data-bs-toggle="modal">
-                                                            Ver detalles
+                                                        @php
+                                                            $articulosJson = $compra->compras_articulos
+                                                                ->map(function ($ca) {
+                                                                    return [
+                                                                        'id' => $ca->id,
+                                                                        'articulo_id' => $ca->articulo->id,
+                                                                        'nombre' => $ca->articulo->nombre,
+                                                                        'codigo' => $ca->articulo->codigo,
+                                                                        'cantidad' => $ca->cantidad_comprada,
+                                                                        'detalle_precio' => $ca->detalle_precio,
+                                                                        'descuento' => $ca->descuento,
+                                                                    ];
+                                                                })
+                                                                ->toArray();
+                                                        @endphp
+                                                        <button class="btn btn-sm btn-success editarCompraBtn"
+                                                            data-id="{{ $compra->id }}"
+                                                            data-codigo="{{ $compra->codigo }}"
+                                                            data-fecha="{{ $compra->fecha_compra }}"
+                                                            data-precio="{{ $compra->precio_total }}"
+                                                            data-descuento="{{ $compra->descuento }}"
+                                                            data-cantidad="{{ $compra->cantidad }}"
+                                                            data-articulos='@json($articulosJson)'
+                                                            data-bs-toggle="modal" data-bs-target="#editarCompraModal">
+                                                            Editar
                                                         </button>
+
+
                                                     </div>
                                                 </div>
                                             </td>
@@ -190,6 +212,88 @@
 
                                 </tbody>
                             </table>
+                            <!-- Modal de Edición -->
+                            <div class="modal fade" id="editarCompraModal" tabindex="-1"
+                                aria-labelledby="editarCompraModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-xl">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-soft-warning justify-content-center position-relative">
+                                            <h3 class="modal-title text-uppercase fw-bold text-warning-emphasis text-center w-100"
+                                                id="editarCompraModalLabel">
+                                                <i class="ri-edit-box-line me-1"></i> Editar Compra
+                                            </h3>
+                                            <button type="button"
+                                                class="btn-close position-absolute end-0 top-50 translate-middle-y me-3"
+                                                data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                        </div>
+
+                                        <form id="editFormCompra">
+                                            @csrf
+                                            @method('PUT')
+                                            <input type="hidden" name="id" id="edit_id">
+
+                                            <div class="modal-body">
+                                                <div class="row g-3">
+                                                    <div class="col-md-3">
+                                                        <label for="edit_codigo" class="form-label">Código</label>
+                                                        <input type="text" name="codigo" id="edit_codigo"
+                                                            class="form-control" required>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label for="edit_fecha_compra" class="form-label">Fecha</label>
+                                                        <input type="date" name="fecha_compra" id="edit_fecha_compra"
+                                                            class="form-control" required>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label for="edit_precio" class="form-label">Precio</label>
+                                                        <input type="number" name="precio" id="edit_precio"
+                                                            class="form-control" step="0.01" min="0" required>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label for="edit_descuento" class="form-label">Descuento</label>
+                                                        <input type="number" name="descuento" id="edit_descuento"
+                                                            class="form-control" step="0.01" min="0">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label for="edit_cantidad" class="form-label">Cantidad</label>
+                                                        <input type="number" name="cantidad" id="edit_cantidad"
+                                                            class="form-control" step="0.01" min="0">
+                                                    </div>
+                                                </div>
+                                                <div class="mt-4">
+                                                    <h5 class="fw-semibold text-primary">Artículos Comprados</h5>
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered table-sm align-middle">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th width="15%">Código</th>
+                                                                    <th width="40%">Nombre</th>
+                                                                    <th width="15%">Cantidad</th>
+                                                                    <th width="15%">Precio Detalle</th>
+                                                                    <th width="15%">Descuento</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="articulosCompraEdit">
+                                                                <tr>
+                                                                    <td colspan="5" class="text-center text-muted">No
+                                                                        hay artículos aún.</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                <!-- Aquí puedes agregar más lógica si necesitas editar artículos, opcional -->
+                                            </div>
+
+                                            <div class="modal-footer mt-3">
+                                                <button type="button" class="btn bg-danger" data-bs-dismiss="modal"
+                                                    style="color: white;">Cerrar</button>
+                                                <button type="submit" class="btn btn-warning">Actualizar Compra</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="noresult" style="display: none">
                                 <div class="text-center">
                                     <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
@@ -261,6 +365,46 @@
                 });
             });
 
+        });
+    </script>
+    <script>
+        $(document).on('click', '.editarCompraBtn', function() {
+            const id = $(this).data('id');
+            const codigo = $(this).data('codigo');
+            const fecha = $(this).data('fecha');
+            const precio = $(this).data('precio');
+            const descuento = $(this).data('descuento');
+            const cantidad = $(this).data('cantidad');
+            const articulos = $(this).data('articulos'); // Viene como JSON
+
+            // Llenar campos generales
+            $('#edit_id').val(id);
+            $('#edit_codigo').val(codigo);
+            $('#edit_fecha_compra').val(fecha);
+            $('#edit_precio').val(precio);
+            $('#edit_descuento').val(descuento);
+            $('#edit_cantidad').val(cantidad);
+
+            // Limpiar tabla de artículos
+            const tbody = $('#articulosCompraEdit');
+            tbody.empty();
+
+            // Llenar tabla con artículos
+            if (articulos && articulos.length > 0) {
+                articulos.forEach(function(art) {
+                    tbody.append(`
+                    <tr>
+                        <td>${art.codigo}</td>
+                        <td>${art.nombre}</td>
+                        <td>${art.cantidad}</td>
+                        <td>Bs. ${parseFloat(art.detalle_precio || 0).toFixed(2)}</td>
+                        <td>Bs. ${parseFloat(art.descuento || 0).toFixed(2)}</td>
+                    </tr>
+                `);
+                });
+            } else {
+                tbody.append('<tr><td colspan="5" class="text-center">No hay artículos en esta compra.</td></tr>');
+            }
         });
     </script>
 @endpush

@@ -27,8 +27,6 @@ class ArticulosController extends Controller
 
     public function registrararticulo(Request $request)
     {
-        //\Log::info($request->all());
-        //exit;
         $request->validate([
             'nombre' => 'required|string|max:255',
             'descuento' => 'nullable|numeric|min:0',
@@ -36,27 +34,26 @@ class ArticulosController extends Controller
             'producto_id' => 'required|exists:productos,id',
             'extension' => 'nullable|string|max:255',
             'fecha_vencimiento' => 'nullable|date',
+            'precio_nuevo' => 'nullable|numeric|min:0',
+            'precio_actual' => 'nullable|numeric|min:0',
+            'precio_radio' => 'required|in:nuevo,actual',
             'imagen' => 'required|array|min:1',
             'imagen.*' => 'image|mimes:jpeg,png,jpg,gif|max:4096',
         ]);
 
-        // Obtener el código base del producto
+        // Obtener el producto
         $producto = Producto::findOrFail($request->producto_id);
 
-        $ultimoArticulo = $producto->articulos()->latest('codigo')->get();
+        // Obtener último artículo para generar código secuencial
+        $ultimoArticulo = $producto->articulos()->latest('codigo')->first();
+        $codigo = $ultimoArticulo ? $ultimoArticulo->codigo + 1 : 1;
 
-        if ($ultimoArticulo) {
-            $cantidad = count($ultimoArticulo);
-            $codigo = $cantidad + 1;
-        } else {
+        // Determinar precio según selección
+        $precio = $request->precio_radio === 'nuevo'
+            ? $request->precio_nuevo
+            : $request->precio_actual;
 
-            $codigo = 1;
-        }
-        if ($request->precio_radio == 'nuevo') {
-            $precio = $request->precio_nuevo;
-        } else {
-            $precio = $request->precio_actual;
-        }
+        // Crear el artículo
         $articulo = Articulo::create([
             'codigo' => $codigo,
             'nombre' => $request->nombre,
@@ -65,11 +62,11 @@ class ArticulosController extends Controller
             'descuento_porcentaje' => $request->descuento_porcentaje ?? 0,
             'descuento_habilitado' => ($request->descuento > 0 || $request->descuento_porcentaje > 0),
             'estado' => 'vigente',
-            'fecha_vencimiento' => $request->fecha_vencimiento ? $request->fecha_vencimiento : null,
+            'fecha_vencimiento' => $request->fecha_vencimiento ?: null,
             'producto_id' => $request->producto_id,
         ]);
 
-        // Especificaciones
+        // Guardar especificaciones
         if ($request->has('especificaciones')) {
             foreach ($request->especificaciones as $tipo_id => $especificacion_id) {
                 Catalogo::create([
@@ -80,13 +77,13 @@ class ArticulosController extends Controller
             }
         }
 
+        // Guardar imágenes
         if ($request->hasFile('imagen')) {
             foreach ($request->file('imagen') as $file) {
-                $fileName = time() . '_' . $file->getClientOriginalName();
+                $fileName = uniqid('articulo_') . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
                 $destinationPath = public_path('archivos/articulos');
                 $file->move($destinationPath, $fileName);
 
-                // Guardar la ruta relativa en la base de datos
                 Posicion::create([
                     'imagen' => 'archivos/articulos/' . $fileName,
                     'articulo_id' => $articulo->id,
@@ -94,7 +91,10 @@ class ArticulosController extends Controller
             }
         }
 
-        return response()->json(['success' => true, 'message' => 'Artículo registrado correctamente.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Artículo registrado correctamente.'
+        ]);
     }
 
     public function editarArticulo(Request $request)
@@ -104,23 +104,23 @@ class ArticulosController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:255',
             'precio' => 'required|numeric|min:0',
-            'stock' => 'required|numeric|min:0',
             'descuento' => 'nullable|numeric|min:0',
             'descuento_porcentaje' => 'nullable|numeric|min:0|max:100',
             'fecha_vencimiento' => 'nullable|date',
+            'imagen' => 'nullable|array',
             'imagen.*' => 'image|mimes:jpeg,png,jpg,gif|max:4096',
         ]);
 
         $articulo->update([
             'nombre' => $request->nombre,
             'precio' => $request->precio,
-            'stock' => $request->stock,
             'descuento' => $request->input('descuento', 0),
             'descuento_porcentaje' => $request->descuento_porcentaje ?? 0,
             'descuento_habilitado' => ($request->descuento > 0 || $request->descuento_porcentaje > 0),
-            'fecha_vencimiento' => $request->fecha_vencimiento,
+            'fecha_vencimiento' => $request->fecha_vencimiento ?: null,
         ]);
 
+        // Actualizar especificaciones
         if ($request->has('especificaciones')) {
             foreach ($request->especificaciones as $tipoId => $especificacionId) {
                 Catalogo::updateOrCreate(
@@ -135,6 +135,22 @@ class ArticulosController extends Controller
             }
         }
 
-        return response()->json(['success' => true, 'message' => 'Artículo actualizado correctamente.']);
+        // Guardar imágenes nuevas
+        if ($request->hasFile('imagen')) {
+            foreach ($request->file('imagen') as $file) {
+                $fileName = uniqid('articulo_') . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
+                $file->move(public_path('archivos/articulos'), $fileName);
+
+                Posicion::create([
+                    'imagen' => 'archivos/articulos/' . $fileName,
+                    'articulo_id' => $articulo->id,
+                ]);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Artículo actualizado correctamente.'
+        ]);
     }
 }

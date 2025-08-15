@@ -71,26 +71,32 @@
                     <form action="" id="addForm">
                         @csrf
 
-                        <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre"
-                                placeholder="Nombre de categoría" required>
+                        <div class="row mb-3">
+                            <div class="col-8">
+                                <label for="nombre" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="nombre" name="nombre"
+                                    placeholder="Nombre de categoría" required>
+                            </div>
+
+                            <div class="col-4">
+                                <label class="form-label">Tipo</label>
+                                <div class="d-flex flex-wrap gap-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="tipo" id="tipo_asignado"
+                                            value="asignado" required>
+                                        <label class="form-check-label" for="tipo_asignado">Ropa</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="tipo" id="tipo_no_asignado"
+                                            value="no asignado">
+                                        <label class="form-check-label" for="tipo_no_asignado">Otros</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Tipo</label>
-                            <div class="d-flex flex-wrap gap-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tipo" id="tipo_asignado"
-                                        value="asignado" required>
-                                    <label class="form-check-label" for="tipo_asignado">Ropa</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tipo" id="tipo_no_asignado"
-                                        value="no asignado">
-                                    <label class="form-check-label" for="tipo_no_asignado">Otros</label>
-                                </div>
-                            </div>
+
                         </div>
 
                         <div class="mb-3">
@@ -135,24 +141,26 @@
                         @csrf
                         <input type="hidden" id="editId" name="id">
 
-                        <div class="mb-3">
-                            <label for="editNombre" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="editNombre" name="nombre"
-                                placeholder="Nombre de categoría" required>
-                        </div>
+                        <div class="row mb-3">
+                            <div class="col-8">
+                                <label for="editNombre" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="editNombre" name="nombre"
+                                    placeholder="Nombre de categoría" required>
+                            </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Tipo</label>
-                            <div class="d-flex flex-wrap gap-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tipo"
-                                        id="edit_tipo_asignado" value="asignado" required>
-                                    <label class="form-check-label" for="edit_tipo_asignado">Ropa</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tipo"
-                                        id="edit_tipo_no_asignado" value="no asignado">
-                                    <label class="form-check-label" for="edit_tipo_no_asignado">Otros</label>
+                            <div class="col-4">
+                                <label class="form-label">Tipo</label>
+                                <div class="d-flex flex-wrap gap-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="tipo"
+                                            id="edit_tipo_asignado" value="asignado" required>
+                                        <label class="form-check-label" for="edit_tipo_asignado">Ropa</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="tipo"
+                                            id="edit_tipo_no_asignado" value="no asignado">
+                                        <label class="form-check-label" for="edit_tipo_no_asignado">Otros</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>

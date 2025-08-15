@@ -3,17 +3,25 @@
     <div class="row">
         <div class="card shadow-sm border rounded-3">
             <div class="card-header bg-soft-primary position-relative d-flex align-items-center">
+
+                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target=".bs-edit-modal-lg">
+                    <i data-feather="edit-2"></i> Editar Categoría
+                </button>
+
                 <h4 class="card-title text-uppercase fw-bold mb-0 mx-auto">
                     Categoria: {{ $categoria->nombre }}
                 </h4>
-                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl">
-                    Registrar Producto
+
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                    data-bs-target=".bs-example-modal-xl">
+                    <i class="bx bx-plus-circle align-middle me-1"></i> Registrar Producto
                 </button>
 
                 &nbsp;
+
                 <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target=".bs-example-modal-lg"
                     data-categoria-id="{{ $categoria->id }}" data-categoria-tipo="{{ $categoria->tipo }}">
-                    Registrar SubCategoría
+                    <i class="bx bx-category-alt align-middle me-1"></i> Registrar SubCategoría
                 </button>
 
             </div>
@@ -115,7 +123,7 @@
 
                                     <span class="btn btn-success btn-sm btn-icon"
                                         onclick="event.stopPropagation(); window.location.href='{{ route('admin.productos.vertodos', ['id' => $subcategoria->id]) }}';"
-                                        title="Crear subcategoría en: {{ $subcategoria->nombre }}">
+                                        title="Entrar a subcategoría {{ $subcategoria->nombre }}">
                                         <i data-feather="eye"></i>
                                     </span>
                                 </a>
@@ -367,7 +375,7 @@
                                     <label for="nombre" class="form-label">Nombre</label>
                                     <input type="text" name="nombre" id="editNombre" class="form-control">
                                 </div>
-                            </div>                           
+                            </div>
 
                             <div class="row mb-3">
                                 <div class="col-md-3">
@@ -379,18 +387,18 @@
                                 <div class="col-md-9">
                                     <label for="editDescripcion" class="form-label">Descripción</label>
                                     <textarea name="descripcion" id="editDescripcion" rows="3" class="form-control"></textarea>
-                                </div>                             
+                                </div>
                             </div>
 
                             <div class="row mb-3">
-                                
+
 
                                 <div class="col-md-12">
                                     <label for="imagen_principal" class="form-label">Imagen principal del producto</label>
                                     <div class="card-body">
                                         <div class="mb-3">
-                                            <input type="file" name="imagen_principal" class="form-control" required>
-                                        </div>                                     
+                                            <input type="file" name="imagen_principal" class="form-control">
+                                        </div>
                                     </div>
                                 </div>
 
@@ -522,7 +530,7 @@
     <!--modal de editar categoria-->
     <div class="modal fade bs-edit-modal-lg" tabindex="-1" aria-labelledby="myLargeModalLabel" aria-modal="true"
         role="dialog">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-soft-warning justify-content-center position-relative">
                     <h3 class="modal-title text-uppercase fw-bold text-warning-emphasis text-center w-100"
@@ -535,67 +543,48 @@
 
                 <!-- Cuerpo del modal -->
                 <div class="modal-body">
-                    <form action="" id="updateForm">
+                    <form action="{{ route('admin.categorias.actualizar') }}" method="POST"
+                        enctype="multipart/form-data">
                         @csrf
-                        <div class="row g-3">
-                            <div class="row mb-3">
-                                <div class="col-md-8">
-                                    <input type="hidden" id="editId" name="id">
-                                    <label for="editNombre" class="form-label">Nombre</label>
-                                    <input type="text" class="form-control" id="editNombre" name="nombre"
-                                        placeholder="Nombre de categoría" required>
-                                </div>
+                        <input type="hidden" name="id" value="{{ $categoria->id }}">
 
-                                <div class="col-md-4">
-                                    <label class="form-label">Tipo</label>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-check mb-2">
-                                                <input class="form-check-input" type="radio" name="tipo"
-                                                    id="edit_tipo_asignado" value="asignado" required>
-                                                <label class="form-check-label" for="edit_tipo_asignado">
-                                                    Ropa
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-check mb-2">
-                                                <input class="form-check-input" type="radio" name="tipo"
-                                                    id="edit_tipo_no_asignado" value="no asignado">
-                                                <label class="form-check-label" for="edit_tipo_no_asignado">
-                                                    Otros
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="row mb-3">
+                            <div class="row col-8">
+                                <label for="editNombre" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="editNombre" name="nombre"
+                                    value="{{ $categoria->nombre }}" required>
                             </div>
 
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <label for="editImagen" class="form-label">Imagen</label>
-                                    <input class="form-control" type="file" id="editImagen" accept="image/*"
-                                        name="imagen">
-                                    <img id="editPreview" src="" alt="Imagen actual" class="mt-2 rounded"
-                                        style="max-height: 100px;">
+                            <div class="row col-4">
+                                <label class="form-label">Tipo</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipo" value="asignado"
+                                        {{ $categoria->tipo === 'asignado' ? 'checked' : '' }}>
+                                    <label class="form-check-label">Ropa</label>
                                 </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-12">
-                                    <label for="editDescripcion" class="form-label">Descripción</label>
-                                    <textarea class="form-control" id="editDescripcion" rows="3" name="descripcion"
-                                        placeholder="Introducir descripción del producto" required></textarea>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipo" value="no asignado"
+                                        {{ $categoria->tipo === 'no asignado' ? 'checked' : '' }}>
+                                    <label class="form-check-label">Otros</label>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="modal-footer">
-                            <button type="button" class="btn bg-danger" data-bs-dismiss="modal"
-                                style="color: white;">Cerrar</button>
-                            <button type="submit" class="btn bg-warning updateBtn"
-                                style="color: white;">Actualizar</button>
+                        <div class="mb-3">
+                            <label for="editImagen" class="form-label">Imagen</label>
+                            <input type="file" class="form-control" id="editImagen" name="imagen" accept="image/*">
+                            @if ($categoria->imagen)
+                                <img src="{{ Storage::url($categoria->imagen) }}" alt="Imagen actual"
+                                    class="mt-2 rounded" style="max-height: 100px;">
+                            @endif
                         </div>
+
+                        <div class="mb-3">
+                            <label for="editDescripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="editDescripcion" name="descripcion" rows="3" required>{{ $categoria->descripcion }}</textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-warning">Actualizar</button>
                     </form>
                 </div>
             </div>
@@ -690,53 +679,6 @@
                 $('#categoriaPadreId').val(categoriaId); // lo asigna correctamente al hidden
             });
 
-
-            //modificar
-            $('.editBtn').click(function() {
-                var data = $(this).data('bs-obj');
-
-                $('#editId').val(data.id);
-                $('#editNombre').val(data.nombre);
-                $('#editDescripcion').val(data.descripcion);
-
-                if (data.tipo === 'asignado') {
-                    $('#edit_tipo_asignado').prop('checked', true);
-                } else {
-                    $('#edit_tipo_no_asignado').prop('checked', true);
-                }
-
-                // Mostrar la imagen actual
-                if (data.imagen) {
-                    $('#editPreview').attr('src', '/storage/' + data.imagen).show();
-                } else {
-                    $('#editPreview').hide();
-                }
-
-                // Limpiar el input file
-                $('#editImagen').val('');
-            });
-
-            $('#updateForm').submit(function(e) {
-                e.preventDefault();
-                $('.updateBtn').prop('disabled', true);
-
-                var formData = new FormData(this);
-
-                $.ajax({
-                    url: "{{ route('admin.categorias.editar') }}",
-                    type: "POST",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(res) {
-                        alert(res.message);
-                        $('.updateBtn').prop('disabled', false);
-                        if (res.success) {
-                            location.reload();
-                        }
-                    }
-                });
-            });
 
             $('#edirformproducto').submit(function(e) {
                 e.preventDefault();

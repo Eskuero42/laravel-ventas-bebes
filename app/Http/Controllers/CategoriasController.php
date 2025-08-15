@@ -10,16 +10,16 @@ use Intervention\Image\Facades\Image;
 
 class CategoriasController extends Controller
 {
-    public function categoriaslistar()
-    {
-        $categorias = Categoria::whereNull('categoria_id')->get();
-        /*$categorias = Categoria::with('categorias_hijos.categorias_hijos')
-            ->whereNull('categoria_id')
-            ->get();*/
-        //\Log::info($categorias);
+        public function categoriaslistar()
+        {
+            $categorias = Categoria::whereNull('categoria_id')->get();
+            /*$categorias = Categoria::with('categorias_hijos.categorias_hijos')
+                ->whereNull('categoria_id')
+                ->get();*/
+            //\Log::info($categorias);
 
-        return view('layouts.admin.categorias.listar', compact('categorias'));
-    }
+            return view('layouts.admin.categorias.listar', compact('categorias'));
+        }
 
     public function categoriasregistrar(Request $request)
     {

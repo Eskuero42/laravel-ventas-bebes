@@ -183,14 +183,13 @@
                 <div class="card-body">
                     <div class="row gx-lg-10">
                         @foreach ($articulos as $articulo)
-                            <div class="col-xl-6">
+                            <div class="col-xl-6 mb-4 mt-2">
                                 <div class="d-flex">
                                     <div class="flex-grow-1">
                                         <h4>{{ $articulo->nombre }}</h4>
                                     </div>
                                     <div class="flex-shrink-0">
                                         <div>
-
 
                                             <a class="btn btn-info comprarArticuloBtn" data-bs-toggle="modal"
                                                 data-bs-target="#compraArticuloModal"
@@ -537,72 +536,95 @@
                         @csrf
                         <input type="hidden" name="id" id="editArticuloId">
                         <input type="hidden" class="form-control" id="editCodigo" name="codigo" readonly>
-                        <input type="text" class="form-control" id="editCodigoVista" value="Automático" readonly>
+                        <input type="hidden" class="form-control" id="editCodigoVista" value="Automático" readonly>
 
                         <div class="row g-3">
-                            <div class="row mb-3">
 
+                            <div class="row">
+                                <div class="col-xl-8">
+                                    <div class="row">
+                                        <div class="mb-3 col-md-5">
+                                            <label for="editNombre" class="form-label">Nombre</label>
+                                            <input type="text" name="nombre" id="editNombre" class="form-control">
+                                        </div>
 
-                                <div class="mb-3 col-md-5">
-                                    <label for="editNombre" class="form-label">Nombre</label>
-                                    <input type="text" name="nombre" id="editNombre" class="form-control">
-                                </div>
-
-                                <div class="mb-3 col-md-3">
-                                    <label for="editPrecio" class="form-label">Precio</label>
-                                    <input type="number" name="precio" id="editPrecio" step="0.01"
-                                        class="form-control">
-                                </div>
-
-                                <div class="mb-3 col-md-2">
-                                    <label for="editStock" class="form-label">Stock</label>
-                                    <input type="number" name="stock" id="editStock" class="form-control">
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="editDescuento-fijo" class="form-label">Descuento por monto fijo</label>
-                                    <div class="input-group has-validation">
-                                        <span class="input-group-text"><i class="ri-money-dollar-circle-line"></i></span>
-                                        <input type="number" name="descuento" id="editDescuento" step="0.01"
-                                            class="form-control">
-                                    </div>
-
-                                    <label for="descuentoPorcentaje" class="form-label mt-3">Descuento porcentual</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="ri-percent-line"></i></span>
-                                        <input type="number" name="descuento_porcentaje" id="editDescuentoPorcentaje"
-                                            step="0.01" class="form-control">
-                                        <button class="btn btn-light" type="button" data-bs-toggle="dropdown"><i
-                                                class="ri-arrow-down-s-line"></i></button>
-                                        <ul class="dropdown-menu dropdown-menu-end">
-                                            @foreach ([10, 20, 30, 40, 50, 60, 70, 80, 90] as $percent)
-                                                <li><a class="dropdown-item" href="#"
-                                                        onclick="document.getElementById('descuento-porcentaje').value = '{{ $percent }}'">{{ $percent }}%</a>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                    @if ($producto->categoria && $producto->categoria->tipo === 'no asignado')
-                                        <div class="mb-3">
-                                            <label for="editFechaVencimiento" class="form-label">Fecha de
-                                                Vencimiento</label>
-                                            <input type="date" name="fecha_vencimiento" id="editFechaVencimiento"
+                                        <div class="mb-3 col-md-3">
+                                            <label for="editPrecio" class="form-label">Precio</label>
+                                            <input type="number" name="precio" id="editPrecio" step="0.01"
                                                 class="form-control">
                                         </div>
-                                    @else
-                                        <input type="hidden" name="fecha_vencimiento" value="">
-                                    @endif
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="editDescuento-fijo" class="form-label">Descuento por monto
+                                                fijo</label>
+                                            <div class="input-group has-validation">
+                                                <span class="input-group-text"><i
+                                                        class="ri-money-dollar-circle-line"></i></span>
+                                                <input type="number" name="descuento" id="editDescuento" step="0.01"
+                                                    class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label for="descuentoPorcentaje" class="form-label mt-3">Descuento
+                                                porcentual</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="ri-percent-line"></i></span>
+                                                <input type="number" name="descuento_porcentaje"
+                                                    id="editDescuentoPorcentaje" step="0.01" class="form-control">
+                                                <button class="btn btn-light" type="button" data-bs-toggle="dropdown"><i
+                                                        class="ri-arrow-down-s-line"></i></button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    @foreach ([10, 20, 30, 40, 50, 60, 70, 80, 90] as $percent)
+                                                        <li><a class="dropdown-item" href="#"
+                                                                onclick="document.getElementById('descuento-porcentaje').value = '{{ $percent }}'">{{ $percent }}%</a>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            @if ($producto->categoria && $producto->categoria->tipo === 'no asignado')
+                                                <div class="mb-3">
+                                                    <label for="editFechaVencimiento" class="form-label">Fecha de
+                                                        Vencimiento</label>
+                                                    <input type="date" name="fecha_vencimiento"
+                                                        id="editFechaVencimiento" class="form-control">
+                                                </div>
+                                            @else
+                                                <input type="hidden" name="fecha_vencimiento" value="">
+                                            @endif
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            @for ($i = 1; $i <= 6; $i++)
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="imagen{{ $i }}" class="form-label">Imagen
+                                                            {{ $i }}</label>
+                                                        <input type="file" name="imagen[]"
+                                                            id="imagen{{ $i }}">
+
+                                                    </div>
+                                                </div>
+                                            @endfor
+                                        </div>
+                                    </div>
+
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-xl-4">
                                     <label class="form-label">Elija las especificaciones del producto</label>
                                     @if ($producto->producto_tipos->isNotEmpty())
                                         <div class="d-flex flex-wrap">
                                             @foreach ($producto->producto_tipos as $productoTipo)
                                                 <div class="me-4 mb-4">
-                                                    <div class="fw-bold mb-2">{{ $productoTipo->tipo?->nombre ?? '—' }}
+                                                    <div class="fw-bold mb-2">
+                                                        {{ $productoTipo->tipo?->nombre ?? '—' }}
                                                     </div>
                                                     @foreach ($productoTipo->tipo->especificaciones as $especificacion)
                                                         <div class="form-check ms-3">
@@ -626,19 +648,7 @@
                                     @endif
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="row mb-3">
-                            @for ($i = 1; $i <= 6; $i++)
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label for="imagen{{ $i }}" class="form-label">Imagen
-                                            {{ $i }}</label>
-                                        <input type="file" name="imagen[]" id="imagen">
-
-                                    </div>
-                                </div>
-                            @endfor
                         </div>
 
                         <div class="modal-footer mt-3">
@@ -1217,7 +1227,6 @@
                 $('#editCodigo').val(data.codigo);
                 $('#editNombre').val(data.nombre);
                 $('#editPrecio').val(data.precio);
-                $('#editStock').val(data.stock);
                 $('#editDescuento').val(data.descuento);
                 $('#editDescuentoPorcentaje').val(data.descuento_porcentaje);
                 $('#editFechaVencimiento').val(data.fecha_vencimiento);
@@ -1228,12 +1237,14 @@
                     $('#edit_tipo_no_asignado').prop('checked', true);
                 }
 
-                if (data.catalogos) {
-                    data.catalogos.forEach(function(catalogo) {
+                const catalogos = $(this).data('bs-catalogos');
+                if (catalogos) {
+                    catalogos.forEach(function(catalogo) {
                         $(`input[name="especificaciones[${catalogo.tipo_id}]"][value="${catalogo.especificacion_id}"]`)
                             .prop('checked', true);
                     });
                 }
+
 
                 $('#editArticuloModal').modal('show');
             });

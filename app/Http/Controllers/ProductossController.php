@@ -48,7 +48,6 @@ class ProductossController extends Controller
         return $this->hasMany(Categoria::class, 'categoria_id')->with('categorias_hijosRecursive', 'productos');
     }*/
 
-
     public function registrarproducto(Request $request)
     {
         $request->validate([
@@ -60,32 +59,34 @@ class ProductossController extends Controller
             'file' => 'nullable|file|image|max:2048',
         ]);
 
-        $image = $request->file('file');
-        $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
+        $save_url = null;
 
-        $paths = [
-            'pc' => 'archivos/productos/pc/',
-            'tablet' => 'archivos/productos/tablet/',
-            'celular' => 'archivos/productos/celular/'
-        ];
+        if ($request->hasFile('file')) {
+            $image = $request->file('file');
+            $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
 
-        $sizes = [
-            'pc' => [800, 800],
-            'tablet' => [500, 500],
-            'celular' => [300, 300]
-        ];
+            $paths = [
+                'pc' => 'productos/pc/',
+                'tablet' => 'productos/tablet/',
+                'celular' => 'productos/celular/'
+            ];
 
-        foreach ($paths as $path) {
-            Storage::makeDirectory($path);
+            $sizes = [
+                'pc' => [800, 800],
+                'tablet' => [500, 500],
+                'celular' => [300, 300]
+            ];
+
+            foreach ($paths as $key => $path) {
+                Storage::disk('public')->makeDirectory($path);
+                Image::make($image)
+                    ->resize($sizes[$key][0], $sizes[$key][1])
+                    ->save(public_path('storage/' . $path . $name_gen));
+            }
+
+            // Guardamos la versión de PC como imagen principal
+            $save_url = 'storage/' . $paths['pc'] . $name_gen;
         }
-
-        foreach ($sizes as $d => $size) {
-            Image::make($image)
-                ->resize($size[0], $size[1])
-                ->save($paths[$d] . $name_gen);
-        }
-
-        $save_url = 'archivos/productos/pc/' . $name_gen;
 
         $producto = Producto::create([
             'codigo' => $request->codigo,
@@ -114,38 +115,46 @@ class ProductossController extends Controller
 
     public function actualizarproducto(Request $request)
     {
-        $rules = [
+        $request->validate([
             'id' => 'required|exists:productos,id',
             'codigo' => 'required|string|max:255|unique:productos,codigo,' . $request->id,
             'nombre' => 'required|string|max:255',
             'precio' => 'required|numeric|min:0',
             'descripcion' => 'nullable|string',
             'categoria_id' => 'required|exists:categorias,id',
-        ];
-
-        // ✅ Solo si viene una imagen nueva, se valida
-        if ($request->hasFile('imagen_principal')) {
-            $rules['imagen_principal'] = 'image|mimes:jpeg,png,jpg,gif,ico|max:2048';
-        }
-
-        $request->validate($rules);
+            'imagen_principal' => 'nullable|image|mimes:jpeg,png,jpg,gif,ico|max:2048',
+        ]);
 
         $producto = Producto::findOrFail($request->id);
 
-        if ($request->hasFile('imagen')) {
-            $imagePath = $request->file('imagen')->store('productos', 'public');
-            $producto->imagen = $imagePath;
+        if ($request->hasFile('imagen_principal') && $request->file('imagen_principal')->isValid()) {
+            $image = $request->file('imagen_principal');
+            $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
+
+            $paths = [
+                'pc' => 'archivos/productos/pc/',
+                'tablet' => 'archivos/productos/tablet/',
+                'celular' => 'archivos/productos/celular/',
+            ];
+
+            $sizes = [
+                'pc' => [800, 800],
+                'tablet' => [500, 500],
+                'celular' => [300, 300],
+            ];
+
+            foreach ($paths as $key => $path) {
+                if (!file_exists(public_path($path))) mkdir(public_path($path), 0755, true);
+
+                Image::make($image)
+                    ->resize($sizes[$key][0], $sizes[$key][1])
+                    ->save(public_path($path . $name_gen));
+            }
+
+            $producto->imagen_principal = $paths['pc'] . $name_gen;
         }
 
-        $producto = Producto::findOrFail($request->id);
-
-        // Solo guardar nueva imagen si se subió
-        if ($request->hasFile('imagen_principal')) {
-            $imagePath = $request->file('imagen_principal')->store('productos', 'public');
-            $producto->imagen_principal = $imagePath;
-        }
-
-        // Actualizar otros campos
+        // Actualizar el resto de campos
         $producto->codigo = $request->codigo;
         $producto->nombre = $request->nombre;
         $producto->descripcion = $request->descripcion;
@@ -157,12 +166,76 @@ class ProductossController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Producto actualizado correctamente.',
-            'producto' => $producto
+            'producto' => $producto,
         ]);
     }
 
     public function articulosver()
     {
         return view('layouts.admin.articulos.ver');
+    }
+
+    public function categoriaseditar(Request $request)
+    {
+        $validated = $request->validate([
+            'id' => 'required|integer|exists:categorias,id',
+            'nombre' => 'required|string|max:255',
+            'tipo' => 'required|in:asignado,no asignado',
+            'descripcion' => 'required|string|max:1000',
+            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,ico|max:2048',
+        ]);
+
+        $categoria = Categoria::findOrFail($request->id);
+
+        // Actualizamos los datos principales
+        $categoria->update([
+            'nombre' => $validated['nombre'],
+            'tipo' => $validated['tipo'],
+            'descripcion' => $validated['descripcion'],
+            'categoria_id' => $validated['categoria_id'] ?? null,
+        ]);
+
+        if ($request->hasFile('imagen')) {
+            // Borrar imágenes antiguas si existen
+            $oldImagePath = $categoria->imagen;
+            if ($oldImagePath) {
+                foreach (['pc', 'tablet', 'celular'] as $device) {
+                    $oldDeviceImagePath = str_replace('pc', $device, $oldImagePath);
+                    if (Storage::exists($oldDeviceImagePath)) {
+                        Storage::delete($oldDeviceImagePath);
+                    }
+                }
+            }
+
+            $image = $request->file('imagen');
+            $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
+
+            $paths = [
+                'pc' => 'archivos/categorias/pc/',
+                'tablet' => 'archivos/categorias/tablet/',
+                'celular' => 'archivos/categorias/celular/'
+            ];
+
+            $sizes = [
+                'pc' => [800, 800],
+                'tablet' => [500, 500],
+                'celular' => [300, 300]
+            ];
+
+            foreach ($paths as $path) {
+                Storage::makeDirectory($path);
+            }
+
+            foreach ($sizes as $device => $size) {
+                Image::make($image)
+                    ->resize($size[0], $size[1])
+                    ->save($paths[$device] . $name_gen);
+            }
+
+            $save_url = 'archivos/categorias/pc/' . $name_gen;
+            $categoria->update(['imagen' => $save_url]);
+        }
+
+        return back()->with('success', 'Categoría actualizada exitosamente.');
     }
 }

@@ -50,6 +50,7 @@ Route::get('/admin/categorias/listar', [CategoriasController::class, 'categorias
 Route::get('/admin/subcategorias/ver', [CategoriasController::class, 'subcategoriasver'])->name('admin.subcatergorias.ver');
 Route::post('/admin/categorias/registrar', [CategoriasController::class, 'categoriasregistrar'])->name('admin.categorias.registrar');
 Route::post('/admin/categorias/editar', [CategoriasController::class, 'categoriaseditar'])->name('admin.categorias.editar');
+Route::post('/admin/categorias/actualizar', [ProductossController::class, 'categoriaseditar'])->name('admin.categorias.actualizar');
 
 //Productos
 Route::get('/admin/productos/ver', [ProductossController::class, 'productosver'])->name('admin.productos.ver');
@@ -77,7 +78,7 @@ Route::delete('/admin/especificaciones/eliminar', [EspecificacionesController::c
 //Articulos
 Route::get('/admin/articulos/listar/{producto_id}', [ArticulosController::class, 'articuloslistar'])->name('admin.articulos.listar');
 Route::post('/admin/articulos/registrar', [ArticulosController::class, 'registrararticulo'])->name('admin.articulos.registrar');
-Route::get('/admin/articulos/editar', [ArticulosController::class, 'editarArticulo'])->name('admin.articulos.editar');
+Route::post('/admin/articulos/editar', [ArticulosController::class, 'editarArticulo'])->name('admin.articulos.editar');
 
 //Detalles
 Route::post('/admin/detalles/editar-varios', [DetallesController::class, 'editardetalles'])->name('admin.editar.detalles');

@@ -51,10 +51,10 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link menu-link text-white bg-baby-sky" href="{{ route('admin.productos.listar') }}">
-                        <img src="{{ asset('backend\assets\images\adminBebBus\iconos\inventario.ico') }}"
+                    <a class="nav-link menu-link text-white bg-baby-sky" href="{{ route('admin.compras.listar') }}">
+                        <img src="{{ asset('backend\assets\images\adminBebBus\iconos\carrito.png') }}"
                             alt="Productos" class="img-fluid avatar-xs me-2">
-                        <span class="fs-3">Productos</span>
+                        <span class="fs-3">Compras</span>
                     </a>
                 </li>
 
@@ -73,14 +73,14 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link text-white bg-baby-sky" href="{{ route('admin.tipos.ver') }}">
-                        <img src="{{ asset('backend\assets\images\adminBebBus\iconos\calendario.ico') }}"
+                        <img src="{{ asset('backend\assets\images\adminBebBus\iconos\especificacion.png') }}"
                             alt="Calendario" class="img-fluid avatar-xs me-2">
                         <span class="fs-3">Tipos</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link text-white bg-baby-sky" href="{{ route('admin.especificaciones.ver') }}">
-                        <img src="{{ asset('backend\assets\images\adminBebBus\iconos\calendario.ico') }}"
+                        <img src="{{ asset('backend\assets\images\adminBebBus\iconos\lista.png') }}"
                             alt="Calendario" class="img-fluid avatar-xs me-2">
                         <span class="fs-3">Especificaciones</span>
                     </a>

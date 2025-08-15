@@ -22,8 +22,8 @@ class ComprasController extends Controller
             ->get();
 
         $categorias = Categoria::with([
-            'categoriasHijosRecursivamente.productos.articulos', // Carga recursiva con productos y artículos
-            'productos.articulos' // También carga productos de las categorías de primer nivel
+            'categoriasHijosRecursivamente.productos.articulos', 
+            'productos.articulos'
         ])
             ->where('categoria_id', null)
             ->get();
@@ -55,19 +55,21 @@ class ComprasController extends Controller
         $articulos = $request->articulos;
 
         foreach ($articulos as $a) {
-            Compra_Articulo::create([
-                'compra_id' => $compra_id,
-                'articulo_id' => $a['articulo_id'],
-                'cantidad_comprada' => $a['cantidad'],
-                'detalle_precio' => 0,
-                'descuento' => 0,
-            ]);
+            if ($a['cantidad'] > 0) {
+                Compra_Articulo::create([
+                    'compra_id' => $compra_id,
+                    'articulo_id' => $a['articulo_id'],
+                    'cantidad_comprada' => $a['cantidad'],
+                    'detalle_precio' => 0,
+                    'descuento' => 0,
+                ]);
 
-            $articulo = Articulo::where('id', $a['articulo_id'])->first();
+                $articulo = Articulo::where('id', $a['articulo_id'])->first();
 
-            Articulo::where('id', $a['articulo_id'])->update([
-                'stock' => $articulo->stock + $a['cantidad']
-            ]);
+                Articulo::where('id', $articulo->id)->update([
+                    'stock' => $articulo->stock + $a['cantidad']
+                ]);
+            }
         }
         return response()->json([
             'success' => true,
