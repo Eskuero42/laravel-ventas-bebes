@@ -79,20 +79,13 @@
                                             <a href="#">
                                                 <div
                                                     style="height: 400px; display: flex; align-items: center; justify-content: center; background-color: #fff;">
-                                                    <img src="images/bebBus/productoRopa/vestido1a.png"
+                                                    <img src="{{ asset($producto->imagen_principal) }}"
                                                         alt="{{$producto->nombre}}"
                                                         style="max-height: 100%; max-width: 100%; object-fit: contain;">
-                                                </div>
+                                                        
+                                                    </div>
                                             </a>
-                                            <a href="#">
-                                                <div
-                                                    style="height: 400px; display: flex; align-items: center; justify-content: center; background-color: #fff;">
-                                                    <img src="images/bebBus/productoRopa/vestido1b.png"
-                                                        alt="{{$producto->nombre}}"
-                                                        style="max-height: 100%; max-width: 100%; object-fit: contain;">
-                                                </div>
-                                            </a>
-
+                                           
                                             <div class="sale-flash badge bg-danger p-2">Agotado</div>
 
                                             <div class="bg-overlay">
