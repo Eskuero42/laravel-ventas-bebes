@@ -66,7 +66,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link menu-link text-white bg-baby-sky" href="{{ route('admin.personas.ver') }}">
+                    <a class="nav-link menu-link text-white bg-baby-sky" href="{{ route('admin.personas.listar') }}">
                         <i class="ri-user-3-line fs-1 me-2"></i>
                         <span class="fs-3">Personas</span>
                     </a>

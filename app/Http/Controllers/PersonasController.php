@@ -9,11 +9,11 @@ use Illuminate\Http\Request;
 
 class PersonasController extends Controller
 {
-    public function personasver()
+    public function personaslistar()
     {
         $ciudades = Ciudad::all();
         $personas = Persona::all();
-        return view('layouts.admin.personas.ver', compact('ciudades', 'personas'));
+        return view('layouts.admin.personas.listar', compact('ciudades', 'personas'));
     }
 
     public function personasregistrar(Request $request)
@@ -66,5 +66,10 @@ class PersonasController extends Controller
             'message' => 'Persona actualizada exitosamente.',
             'persona' => $persona,
         ]);
+    }
+
+    public function personasver()
+    {
+        return view('layouts.admin.personas.ver',);
     }
 }
